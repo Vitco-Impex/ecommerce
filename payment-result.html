@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Payment status — VITCO</title>
+  <meta name="description" content="Your VITCO booking payment status.">
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ===================== Promo marquee ===================== -->
+  <div class="promo-marquee" role="marquee" aria-label="Current offers">
+    <div class="promo-marquee-track">
+      <span class="promo-marquee-set">
+        <span data-i18n="marquee.item1">🇮🇳 Proudly an Indian Brand — Made in Agra</span>
+        <span data-i18n="marquee.item2">10% OFF on select Milk Analyzers this month</span>
+        <span data-i18n="marquee.item3">🚚 Free Home Delivery across India</span>
+        <span data-i18n="marquee.item4">🛠️ Pan-India After-Sales Support</span>
+      </span>
+      <span class="promo-marquee-set" aria-hidden="true">
+        <span data-i18n="marquee.item1">🇮🇳 Proudly an Indian Brand — Made in Agra</span>
+        <span data-i18n="marquee.item2">10% OFF on select Milk Analyzers this month</span>
+        <span data-i18n="marquee.item3">🚚 Free Home Delivery across India</span>
+        <span data-i18n="marquee.item4">🛠️ Pan-India After-Sales Support</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- ===================== Header ===================== -->
+  <header class="site-header">
+    <div class="container nav-row">
+      <a href="index.html#top" class="brand">
+        <img src="assets/logo.svg" alt="VITCO logo">
+        <img class="brand-badge" src="assets/indian-product.png" alt="An Indian Product">
+      </a>
+      <div class="site-search" id="siteSearch">
+        <svg class="site-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+        <input type="search" id="siteSearchInput" class="site-search-input" autocomplete="off" spellcheck="false"
+          data-i18n-placeholder="search.placeholder" placeholder="Search products — e.g. milk analyzer, boiler, chiller"
+          aria-label="Search products" aria-expanded="false" aria-controls="siteSearchPanel" role="combobox"
+          aria-autocomplete="list">
+        <button type="button" class="site-search-clear" id="siteSearchClear" aria-label="Clear search" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+
+        <div class="site-search-panel" id="siteSearchPanel" hidden>
+          <div class="site-search-hint" id="siteSearchHint" data-i18n="search.hint">Popular:</div>
+          <div class="site-search-chips" id="siteSearchChips"></div>
+          <div class="site-search-results" id="siteSearchResults"></div>
+          <div class="site-search-empty" id="siteSearchEmpty" hidden>
+            <p data-i18n="search.noResultsPrefix">No products matched</p>
+            <p class="site-search-empty-query" id="siteSearchEmptyQuery"></p>
+            <a class="btn btn-primary btn-sm" id="siteSearchEmptyWa" href="#" target="_blank" rel="noopener"
+              data-i18n="search.askOnWhatsApp">Ask us on WhatsApp
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="nav-cta">
+        <a href="profile.html" class="header-profile js-profile-link" id="headerProfile" data-i18n-title="mobileNav.profile" title="Profile" aria-label="Profile">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4" /><path d="M4 21v-1a8 8 0 0 1 16 0v1" /></svg>
+        </a>
+        <div class="lang-switch" role="group" aria-label="Language / भाषा">
+          <button type="button" class="lang-btn active" data-lang="en">EN</button>
+          <button type="button" class="lang-btn" data-lang="hi">हिं</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="pay-section">
+      <div class="container pay-wrap">
+        <div class="acct-card pay-result-card">
+          <div class="pay-result-icon" id="payResultIcon" data-state="pending">
+            <svg class="pay-result-icon-success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+            <svg class="pay-result-icon-pending" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <svg class="pay-result-icon-failed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+          </div>
+          <h1 id="payResultTitle" data-i18n="payresult.pendingTitle">Checking your payment…</h1>
+          <p id="payResultBody" data-i18n="payresult.pendingBody">This may take a moment. Please don't close this page.</p>
+          <p class="pay-result-order" id="payResultOrder" hidden><span data-i18n="payresult.orderId">Order ID</span>: <strong id="payResultOrderId"></strong></p>
+          <div class="acct-actions pay-result-actions">
+            <a class="btn btn-primary" href="payment.html" id="payResultTryAgain" data-i18n="payresult.tryAgain" hidden>Try again</a>
+            <a class="btn btn-line" href="profile.html" data-i18n="payresult.backToProfile">Back to your requests</a>
+            <a class="btn btn-line" href="index.html" data-i18n="payresult.backHome">Back to the store</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================== Footer ===================== -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <div class="footer-brand">
+          <img src="assets/logo.svg" alt="">
+          <span>VITCO</span>
+        </div>
+        <p style="color:#95A3AC;max-width:38ch;" data-i18n="footer.tagline">Vijay Trading Corporation — manufacturers of
+          dairy testing, processing and retail equipment. Rambagh, Agra (U.P.).</p>
+      </div>
+      <div id="footerCategoriesWrap" hidden>
+        <h4 data-i18n="footer.rangeTitle">Product range</h4>
+        <ul id="footerCategories"></ul>
+      </div>
+      <div>
+        <h4 data-i18n="footer.contactTitle">Contact</h4>
+        <ul>
+          <li><a href="tel:+919639017048">96390 17048</a></li>
+          <li><a href="https://wa.me/919917045963" target="_blank" rel="noopener">WhatsApp 99170 45963</a></li>
+          <li><a href="mailto:corporationvijay@gmail.com">corporationvijay@gmail.com</a></li>
+          <li><a href="tel:+915622240022" data-i18n="footer.complaints">Complaints: 0562-2240022</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <span>© <span id="year">2026</span> <span data-i18n="footer.copyright">Vijay Trading Corporation. All rights
+          reserved.</span></span>
+      <span data-i18n="footer.priceNote">Prices on request — contact our team for a current quote.</span>
+    </div>
+  </footer>
+
+  <!-- ===================== Floating contact buttons ===================== -->
+  <div class="fab-stack">
+    <a class="fab call-fab" href="tel:+919917673301" aria-label="Call VITCO on 9917673301">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" aria-hidden="true">
+        <path
+          d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+      </svg>
+      <span class="call-fab-number">9917673301</span>
+    </a>
+    <a class="fab whatsapp-fab" href="https://wa.me/919917045963?text=I%27m%20interested%20in%20VITCO%20dairy%20equipment."
+      target="_blank" rel="noopener" aria-label="Chat with VITCO on WhatsApp">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path
+          d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.87 9.87 0 0 0 4.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.14h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.37c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.83 2.42a8.18 8.18 0 0 1 2.41 5.83c0 4.54-3.7 8.22-8.24 8.22Zm4.52-6.16c-.25-.12-1.47-.73-1.7-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.78.97-.14.17-.29.19-.53.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.48-1.39-1.73-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.44-.06-.12-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.87.85-.87 2.08 0 1.22.89 2.41 1.02 2.57.12.17 1.75 2.67 4.24 3.75.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.08.15-1.18-.06-.1-.23-.16-.48-.28Z" />
+      </svg>
+    </a>
+  </div>
+
+  <!-- ===================== Mobile bottom nav ===================== -->
+  <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+    <a href="index.html#top" class="mobile-bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9.5 12 3l9 6.5" />
+        <path d="M5 10v9a1 1 0 0 0 1 1h3v-6h6v6h3a1 1 0 0 0 1-1v-9" />
+      </svg>
+      <span data-i18n="mobileNav.home">Home</span>
+    </a>
+    <button type="button" class="mobile-bottom-nav-item" id="mobileNavSearch">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </svg>
+      <span data-i18n="mobileNav.search">Search</span>
+    </button>
+    <a href="complaint.html" class="mobile-bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+        <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3v5Z" />
+        <path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3v5Z" />
+      </svg>
+      <span data-i18n="mobileNav.complaint">Complaint</span>
+    </a>
+    <a href="profile.html" class="mobile-bottom-nav-item js-profile-link" id="mobileNavProfile">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4" />
+        <path d="M4 21v-1a8 8 0 0 1 16 0v1" />
+      </svg>
+      <span data-i18n="mobileNav.profile">Profile</span>
+    </a>
+  </nav>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/catalog.js"></script>
+  <script src="js/otp-modal.js"></script>
+  <script src="js/account.js"></script>
+  <script src="js/payment-result-page.js"></script>
+  <script src="js/main.js"></script>
+</body>
+
+</html>
