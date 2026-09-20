@@ -1430,9 +1430,37 @@ select.acct-input { appearance: none; background: #fff url("data:image/svg+xml,%
 .cart-item-remove { flex: none; width: 36px; height: 36px; border-radius: var(--radius-sm); border: none; background: none; color: var(--steel-400); display: flex; align-items: center; justify-content: center; cursor: pointer; }
 .cart-item-remove:hover { background: #FCEBEA; color: #B3261E; }
 .cart-item-remove svg { width: 16px; height: 16px; }
-.cart-summary { position: sticky; top: calc(var(--header-h, 73px) + 16px); }
+.cart-summary { position: sticky; top: calc(var(--header-h, 73px) + 16px); margin-bottom: 40px; }
 .cart-summary-count { font-size: 13.5px; color: var(--steel-700); margin: 0 0 16px; }
 .cart-send-btn { width: 100%; justify-content: center; }
+.cart-summary-hint { font-size: 12.5px; color: #B3261E; font-weight: 600; margin: 10px 0 0; text-align: center; }
+@media (max-width: 640px) {
+  /* The cart's primary CTA is often the last thing on the page — without this it renders directly
+     under the fixed call/WhatsApp FABs and the mobile bottom nav, which visually cover it. */
+  .cart-summary { margin-bottom: 110px; }
+}
+
+.cart-addr-card { margin-bottom: 20px; }
+.cart-addr-card[hidden] { display: none; }
+.addr-pick-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.addr-pick { position: relative; display: block; cursor: pointer; }
+.addr-pick input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.addr-pick-card {
+  display: block;
+  height: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  transition: border-color .16s ease, box-shadow .16s ease, background .16s ease;
+}
+.addr-pick input:checked + .addr-pick-card { border-color: var(--brand); box-shadow: 0 0 0 1px var(--brand); background: var(--brand-tint); }
+.addr-pick input:focus-visible + .addr-pick-card { outline: 3px solid var(--brand); outline-offset: 2px; }
+.addr-pick-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.addr-pick-head strong { font-family: 'Archivo', sans-serif; font-size: 13.5px; color: var(--brand-deep); }
+.addr-pick-edit { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--steel-400); text-decoration: none; padding: 2px 4px; }
+.addr-pick-edit:hover { color: var(--brand-deep); text-decoration: underline; }
+.addr-pick-body { font-size: 13px; line-height: 1.5; color: var(--steel-700); overflow-wrap: anywhere; }
+.addr-pick-body strong { display: block; color: var(--ink); }
 
 /* ============ Toast ============ */
 .vitco-toast {

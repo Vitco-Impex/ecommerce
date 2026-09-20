@@ -101,6 +101,73 @@
     <section class="cart-body">
       <div class="container">
         <h1 class="cart-heading" data-i18n="cart.title">Cart</h1>
+
+        <div class="acct-card cart-addr-card" id="cartAddrCard" hidden>
+          <div class="acct-card-head">
+            <h2 data-i18n="addr.title">Delivery addresses</h2>
+            <button type="button" class="btn btn-line btn-sm" id="addrAdd" data-i18n="addr.add">Add address</button>
+          </div>
+          <div class="addr-form-wrap" id="addrFormWrap" hidden>
+            <h3 id="addrFormTitle" data-i18n="addr.addTitle">Add a new address</h3>
+            <form class="acct-form" id="addrForm" novalidate>
+              <fieldset>
+                <legend class="acct-legend" data-i18n="addr.type">Address type</legend>
+                <div class="acct-chips" id="aChips">
+                  <label class="acct-chip"><input type="radio" name="label" value="Dairy" checked><span data-i18n="addr.typeDairy">Dairy / plant</span></label>
+                  <label class="acct-chip"><input type="radio" name="label" value="Office"><span data-i18n="addr.typeOffice">Office</span></label>
+                  <label class="acct-chip"><input type="radio" name="label" value="Home"><span data-i18n="addr.typeHome">Home</span></label>
+                  <label class="acct-chip"><input type="radio" name="label" value="Other"><span data-i18n="addr.typeOther">Other</span></label>
+                </div>
+              </fieldset>
+              <div class="acct-two">
+                <div class="acct-field">
+                  <label for="aName" data-i18n="addr.contactName">Receiver's name</label>
+                  <input id="aName" class="acct-input" name="contact_name" type="text" maxlength="80" autocomplete="name">
+                  <p class="acct-field-error" hidden></p>
+                </div>
+                <div class="acct-field">
+                  <label for="aPhone" data-i18n="addr.contactMobile">Receiver's mobile</label>
+                  <input id="aPhone" class="acct-input" name="contact_mobile" type="tel" inputmode="numeric" maxlength="10" autocomplete="tel-national">
+                  <p class="acct-field-error" hidden></p>
+                </div>
+              </div>
+              <div class="acct-field">
+                <label for="aLine1" data-i18n="addr.line1">House / plot no., street, village</label>
+                <input id="aLine1" class="acct-input" name="line1" type="text" maxlength="160" autocomplete="address-line1">
+                <p class="acct-field-error" hidden></p>
+              </div>
+              <div class="acct-field">
+                <label for="aLine2"><span data-i18n="addr.line2">Landmark</span> <span class="opt" data-i18n="acct.optional">(optional)</span></label>
+                <input id="aLine2" class="acct-input" name="line2" type="text" maxlength="160" autocomplete="address-line2">
+              </div>
+              <div class="acct-two">
+                <div class="acct-field">
+                  <label for="aCity" data-i18n="addr.city">City / town</label>
+                  <input id="aCity" class="acct-input" name="city" type="text" maxlength="80" autocomplete="address-level2">
+                  <p class="acct-field-error" hidden></p>
+                </div>
+                <div class="acct-field">
+                  <label for="aPin" data-i18n="addr.pincode">Pincode</label>
+                  <input id="aPin" class="acct-input" name="pincode" type="text" inputmode="numeric" maxlength="6" autocomplete="postal-code">
+                  <p class="acct-field-error" hidden></p>
+                </div>
+              </div>
+              <div class="acct-field">
+                <label for="aState" data-i18n="addr.state">State</label>
+                <select id="aState" class="acct-input" name="state" autocomplete="address-level1"></select>
+                <p class="acct-field-error" hidden></p>
+              </div>
+              <label class="acct-check" id="aDefaultRow"><input type="checkbox" name="is_default"><span data-i18n="addr.makeDefaultCheck">Use as my default address</span></label>
+              <p class="acct-msg" id="aMsg" role="status" hidden></p>
+              <div class="acct-actions">
+                <button type="submit" class="btn btn-primary" id="aSave"><span data-i18n="addr.save">Save address</span></button>
+                <button type="button" class="btn btn-line" id="aCancel" data-i18n="addr.cancel">Cancel</button>
+              </div>
+            </form>
+          </div>
+          <div id="addrList" aria-live="polite"></div>
+        </div>
+
         <div id="cartRoot" aria-live="polite"></div>
       </div>
     </section>
