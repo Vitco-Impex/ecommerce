@@ -278,6 +278,17 @@
   var videoList = makeUrlList("videoList", "videoAddBtn", "https://youtube.com/watch?v=...");
   var specsList = makeSpecsList();
 
+  // ------------------------------------------------------------------ description (mini rich text)
+  // execCommand is deprecated but still the simplest way to get bold/italic/underline/lists out of a
+  // plain contenteditable box without pulling in a whole editor library for one form field.
+  var descBox = $("prodDescription");
+  document.querySelectorAll(".admin-richtext-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      descBox.focus();
+      document.execCommand(btn.dataset.cmd, false, null);
+    });
+  });
+
   // ------------------------------------------------------------------ lists
   function skeletons(container, n) {
     container.textContent = "";
@@ -383,17 +394,15 @@
     categorySelect.value = p.category_id || "";
     fieldError(categorySelect, $("prodCategoryErr"), null);
     setNameValues(p.name_en, p.name_hi);
-    $("prodImage").value = p.image_url || "";
     $("prodPrice").value = p.price != null ? p.price : "";
     $("prodDiscountPrice").value = p.discount_price != null ? p.discount_price : "";
-    $("prodDescription").value = p.description || "";
-    galleryList.set(p.gallery_images);
+    descBox.innerHTML = p.description || "";
+    galleryList.set([p.image_url].concat(p.gallery_images || []).filter(Boolean));
     videoList.set(p.video_urls);
     specsList.set(p.specs);
-    fieldError($("prodImage"), $("prodImageErr"), null);
     fieldError($("prodPrice"), $("prodPriceErr"), null);
     fieldError($("prodDiscountPrice"), $("prodDiscountPriceErr"), null);
-    fieldError($("prodDescription"), $("prodDescriptionErr"), null);
+    fieldError(descBox, $("prodDescriptionErr"), null);
     slugTouched = true;
     slugInput.value = p.slug || "";
     slugInput.hidden = false;
@@ -441,6 +450,7 @@
     $("editBanner").hidden = true;
     $("productForm").reset();
     setNameValues("", "");
+    descBox.innerHTML = "";
     galleryList.set([]);
     videoList.set([]);
     specsList.set([]);
@@ -476,7 +486,9 @@
     var nameEn = nameValues.en.trim();
     var nameHi = nameValues.hi.trim();
     var slug = currentSlug();
-    var imageUrl = $("prodImage").value.trim();
+    var images = galleryList.get();
+    var imageUrl = images[0] || null;
+    var galleryImages = images.slice(1);
     var priceRaw = $("prodPrice").value.trim();
     var discountRaw = $("prodDiscountPrice").value.trim();
     var price = priceRaw === "" ? null : Number(priceRaw);
@@ -491,7 +503,6 @@
     check(!!categoryId, categorySelect, $("prodCategoryErr"), "err.category");
     check(nameEn.length >= 2, nameInput, nameErr, "err.productName");
     check(/^[a-z0-9-]{2,60}$/.test(slug), slugTouched ? slugInput : nameInput, $("prodSlugErr"), "err.slug");
-    check(imageUrl === "" || /^https?:\/\/\S+$/i.test(imageUrl), $("prodImage"), $("prodImageErr"), "err.imageUrl");
     check(price === null || (Number.isFinite(price) && price >= 0), $("prodPrice"), $("prodPriceErr"), "err.price");
     check(discountPrice === null || (Number.isFinite(discountPrice) && discountPrice >= 0), $("prodDiscountPrice"), $("prodDiscountPriceErr"), "err.price");
     check(discountPrice === null || (price !== null && discountPrice < price), $("prodDiscountPrice"), $("prodDiscountPriceErr"), "err.discountPrice");
@@ -505,9 +516,11 @@
 
     var payload = {
       category_id: categoryId, slug: slug, name_en: nameEn, name_hi: nameHi || null,
-      image_url: imageUrl || null, price: price, discount_price: discountPrice,
-      description: $("prodDescription").value.trim() || null,
-      gallery_images: galleryList.get(), video_urls: videoList.get(), specs: specsList.get()
+      image_url: imageUrl, price: price, discount_price: discountPrice,
+      // contenteditable leaves stray markup (e.g. "<br>") behind even when visually empty — use the
+      // plain-text length to decide, but save the real HTML so bold/lists actually persist.
+      description: descBox.textContent.trim() ? descBox.innerHTML : null,
+      gallery_images: galleryImages, video_urls: videoList.get(), specs: specsList.get()
     };
     var failKey = wasEditing ? "admin.updateProductFailed" : "admin.addProductFailed";
     var query = wasEditing
@@ -531,6 +544,7 @@
         $("productForm").reset();
         categorySelect.value = keepCategory;
         setNameValues("", "");
+        descBox.innerHTML = "";
         galleryList.set([]);
         videoList.set([]);
         specsList.set([]);

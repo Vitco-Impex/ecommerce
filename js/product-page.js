@@ -170,10 +170,12 @@
     );
 
     if (product.description) {
+      // Rendered unescaped — this is trusted admin-authored HTML from the mini rich-text editor in
+      // admin-product.html (bold/italic/underline/lists only), never visitor input.
       html += (
         '<section class="pdp-description"><div class="container">' +
         '  <h2 data-i18n="pdp.descriptionTitle">' + esc(t("pdp.descriptionTitle", "Description")) + '</h2>' +
-        '  <p>' + esc(product.description) + '</p>' +
+        '  <div class="pdp-description-body">' + product.description + '</div>' +
         '</div></section>'
       );
     }

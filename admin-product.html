@@ -163,12 +163,6 @@
                 <input id="prodNameInput" class="acct-input" type="text" maxlength="120" autocomplete="off">
                 <p class="acct-field-error" id="prodNameErr" hidden></p>
               </div>
-              <div class="acct-field">
-                <label for="prodImage" data-i18n="admin.productImage">Image URL</label>
-                <input id="prodImage" class="acct-input" type="url" maxlength="2000" autocomplete="off" placeholder="https://...">
-                <p class="acct-field-error" id="prodImageErr" hidden></p>
-                <p class="acct-hint" data-i18n="admin.productImageHint">Optional — paste a link to a hosted photo of this product. Leave blank to keep the placeholder icon.</p>
-              </div>
               <div class="acct-two">
                 <div class="acct-field">
                   <label for="prodPrice" data-i18n="admin.productPrice">Price (₹)</label>
@@ -182,14 +176,23 @@
                 </div>
               </div>
               <div class="acct-field">
-                <label for="prodDescription"><span data-i18n="admin.productDescription">Description</span> <span class="opt" data-i18n="acct.optional">(optional)</span></label>
-                <textarea id="prodDescription" class="acct-input" rows="4" maxlength="4000"></textarea>
-                <p class="acct-field-error" id="prodDescriptionErr" hidden></p>
-              </div>
-              <div class="acct-field">
-                <label data-i18n="admin.productGallery">Additional photos <span class="opt" data-i18n="acct.optional">(optional)</span></label>
+                <label data-i18n="admin.productGallery">Photos <span class="opt" data-i18n="acct.optional">(optional)</span></label>
                 <div id="galleryList" class="admin-repeat-list"></div>
                 <button type="button" class="btn btn-line btn-sm" id="galleryAddBtn" data-i18n="admin.addImage">+ Add photo</button>
+                <p class="acct-hint" data-i18n="admin.productImageHint">Paste links to hosted photos — the first one is used as the cover photo on cards and in the cart; the rest appear in the product page's gallery.</p>
+              </div>
+              <div class="acct-field">
+                <label for="prodDescription"><span data-i18n="admin.productDescription">Description</span> <span class="opt" data-i18n="acct.optional">(optional)</span></label>
+                <div class="admin-richtext-toolbar" role="toolbar" aria-label="Formatting">
+                  <button type="button" class="admin-richtext-btn" data-cmd="bold" data-i18n-title="admin.rtBold" title="Bold"><b>B</b></button>
+                  <button type="button" class="admin-richtext-btn" data-cmd="italic" data-i18n-title="admin.rtItalic" title="Italic"><i>I</i></button>
+                  <button type="button" class="admin-richtext-btn" data-cmd="underline" data-i18n-title="admin.rtUnderline" title="Underline"><u>U</u></button>
+                  <span class="admin-richtext-sep"></span>
+                  <button type="button" class="admin-richtext-btn" data-cmd="insertUnorderedList" data-i18n-title="admin.rtBulletList" title="Bullet list">&bull; &bull;</button>
+                  <button type="button" class="admin-richtext-btn" data-cmd="insertOrderedList" data-i18n-title="admin.rtNumberList" title="Numbered list">1. 2.</button>
+                </div>
+                <div id="prodDescription" class="acct-input admin-richtext" contenteditable="true"></div>
+                <p class="acct-field-error" id="prodDescriptionErr" hidden></p>
               </div>
               <div class="acct-field">
                 <label data-i18n="admin.productVideos">Video links <span class="opt" data-i18n="acct.optional">(optional)</span></label>

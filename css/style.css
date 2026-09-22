@@ -965,7 +965,12 @@ footer.site-footer a:hover { color: #fff; }
 
 .pdp-description { padding: 8px 0 40px; }
 .pdp-description h2 { font-size: 20px; margin-bottom: 14px; }
-.pdp-description p { font-size: 14.5px; line-height: 1.7; color: var(--steel-700); white-space: pre-wrap; max-width: 720px; }
+.pdp-description-body { font-size: 14.5px; line-height: 1.7; color: var(--steel-700); max-width: 720px; }
+.pdp-description-body p { margin: 0 0 12px; }
+.pdp-description-body p:last-child { margin-bottom: 0; }
+.pdp-description-body ul, .pdp-description-body ol { margin: 0 0 12px; padding-left: 22px; }
+.pdp-description-body li { margin-bottom: 4px; }
+.pdp-description-body b, .pdp-description-body strong { color: var(--ink); }
 
 .pdp-videos { padding: 8px 0 40px; background: var(--steel-50); }
 .pdp-videos h2 { font-size: 20px; margin-bottom: 14px; }
@@ -1721,6 +1726,40 @@ a.catalog-admin-tile:hover .catalog-admin-tile-icon { background: #fff; }
   justify-content: center;
 }
 .admin-repeat-remove:hover { background: #FCEBEA; color: #B3261E; border-color: #F3B9B5; }
+
+.admin-richtext-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-bottom: none;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  background: var(--steel-50);
+}
+.admin-richtext-btn {
+  min-width: 32px;
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: none;
+  color: var(--steel-700);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+}
+.admin-richtext-btn:hover { background: #fff; border-color: var(--line); }
+.admin-richtext-sep { width: 1px; height: 20px; background: var(--line); margin: 0 2px; }
+.admin-richtext {
+  min-height: 110px;
+  max-height: 320px;
+  overflow-y: auto;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  line-height: 1.6;
+}
+.admin-richtext:focus { outline: 2px solid var(--brand); outline-offset: -1px; }
+.admin-richtext ul, .admin-richtext ol { margin: 0 0 8px; padding-left: 22px; }
 
 .admin-edit-banner {
   display: flex;
