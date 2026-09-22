@@ -24,8 +24,6 @@
     '<line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
   var cartIconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
     '<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>';
-  var phoneIconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-    '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>';
 
   function esc(s) {
     return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
@@ -104,8 +102,6 @@
     if (metaDesc) metaDesc.setAttribute("content", name + " — VITCO dairy equipment, Vijay Trading Corporation, Agra.");
 
     var related = category ? catalog.productsInCategory(category.id).filter(function (p) { return p.id !== product.id; }).slice(0, 6) : [];
-    var catLinkHtml = category ? '<a href="' + catHref + '">' + esc(catName) + '</a>' : esc(t("pdp.specCategory"));
-    var whyPoints = ["about.point1", "about.point3"];
 
     var html = "";
 
@@ -151,11 +147,12 @@
       '      <h1>' + esc(name) + '</h1>' +
       '      <div class="pdp-price-row">' +
       pdpPrice +
-      '        <span class="pdp-stock" data-i18n="pdp.specAvailabilityValue">' + esc(t("pdp.specAvailabilityValue")) + '</span>' +
       '      </div>' +
-      '      <ul class="pdp-trust-row">' +
-      whyPoints.map(function (k) { return '<li>' + checkIconSvg + '<span data-i18n="' + k + '">' + esc(t(k)) + '</span></li>'; }).join('') +
-      '      </ul>' +
+      (product.description
+        // Rendered unescaped — this is trusted admin-authored HTML from the mini rich-text editor
+        // in admin-product.html (bold/italic/underline/lists only), never visitor input.
+        ? '      <div class="pdp-description-body">' + product.description + '</div>'
+        : '') +
       '      <div class="pdp-cta-row">' +
       '        <button type="button" class="btn-icon pdp-cart-btn" data-i18n-title="common.addToCart" title="' + esc(t("common.addToCart")) + '" aria-label="' + esc(t("common.addToCart")) + '">' + cartIconSvg + '</button>' +
       '        <button type="button" class="btn btn-line" data-i18n="common.buyNow">' + esc(t("common.buyNow")) + '</button>' +
@@ -163,22 +160,10 @@
       '          ' + arrowIconSvg +
       '        </a>' +
       '      </div>' +
-      '      <a class="pdp-call-link" href="tel:+919917673301">' + phoneIconSvg + '<span>9917673301</span></a>' +
       '    </div>' +
       '  </div>' +
       '</section>'
     );
-
-    if (product.description) {
-      // Rendered unescaped — this is trusted admin-authored HTML from the mini rich-text editor in
-      // admin-product.html (bold/italic/underline/lists only), never visitor input.
-      html += (
-        '<section class="pdp-description"><div class="container">' +
-        '  <h2 data-i18n="pdp.descriptionTitle">' + esc(t("pdp.descriptionTitle", "Description")) + '</h2>' +
-        '  <div class="pdp-description-body">' + product.description + '</div>' +
-        '</div></section>'
-      );
-    }
 
     if (product.video_urls && product.video_urls.length) {
       html += (
@@ -206,10 +191,6 @@
       '    <h2 data-i18n="pdp.specsTitle">' + esc(t("pdp.specsTitle")) + '</h2>' +
       '    <table class="pdp-specs-table"><tbody>' +
       '      <tr><th data-i18n="pdp.specModel">' + esc(t("pdp.specModel")) + '</th><td>' + esc(name) + '</td></tr>' +
-      '      <tr><th data-i18n="pdp.specCategory">' + esc(t("pdp.specCategory")) + '</th><td>' + catLinkHtml + '</td></tr>' +
-      '      <tr><th data-i18n="pdp.specPrice">' + esc(t("pdp.specPrice")) + '</th><td>' + (product.price == null ? '<span data-i18n="common.priceTBD">' + esc(t("common.priceTBD")) + '</span>' : esc(catalog.formatPrice(product.discount_price != null ? product.discount_price : product.price))) + '</td></tr>' +
-      '      <tr><th data-i18n="pdp.specAvailability">' + esc(t("pdp.specAvailability")) + '</th><td data-i18n="pdp.specAvailabilityValue">' + esc(t("pdp.specAvailabilityValue")) + '</td></tr>' +
-      '      <tr><th data-i18n="pdp.specWarranty">' + esc(t("pdp.specWarranty")) + '</th><td data-i18n="pdp.specWarrantyValue">' + esc(t("pdp.specWarrantyValue")) + '</td></tr>' +
       customSpecRows +
       '    </tbody></table>' +
       '  </div>' +

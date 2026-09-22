@@ -942,30 +942,13 @@ footer.site-footer a:hover { color: #fff; }
 .pdp-price { font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 21px; color: var(--brand-deep); }
 .pdp-price-was { font-size: 15px; color: var(--steel-400); text-decoration: line-through; }
 .pdp-price-off { font-size: 12.5px; font-weight: 700; color: #1E8A4C; background: #E4F5E9; border-radius: 20px; padding: 4px 10px; }
-.pdp-stock { font-size: 13px; color: var(--steel-700); background: var(--steel-50); border: 1px solid var(--line); padding: 5px 12px; border-radius: 20px; }
-.pdp-trust-row { list-style: none; margin: 0 0 24px; padding: 0; display: grid; gap: 10px; }
-.pdp-trust-row li { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--steel-700); }
-.pdp-trust-row svg { width: 18px; height: 18px; color: var(--brand); flex: none; margin-top: 1px; }
 .pdp-cta-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
 .pdp-cta-row .btn { flex: 1 1 160px; justify-content: center; white-space: nowrap; }
 .pdp-cta-row .btn svg { width: 16px; height: 16px; flex: none; }
 .pdp-cart-btn { flex: none; width: 48px; height: 48px; }
 .pdp-enquire-btn { flex-basis: 210px; }
-.pdp-call-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--brand-deep);
-  text-decoration: none;
-}
-.pdp-call-link svg { width: 16px; height: 16px; }
-.pdp-call-link:hover { text-decoration: underline; }
 
-.pdp-description { padding: 8px 0 40px; }
-.pdp-description h2 { font-size: 20px; margin-bottom: 14px; }
-.pdp-description-body { font-size: 14.5px; line-height: 1.7; color: var(--steel-700); max-width: 720px; }
+.pdp-description-body { font-size: 14.5px; line-height: 1.7; color: var(--steel-700); margin-bottom: 24px; }
 .pdp-description-body p { margin: 0 0 12px; }
 .pdp-description-body p:last-child { margin-bottom: 0; }
 .pdp-description-body ul, .pdp-description-body ol { margin: 0 0 12px; padding-left: 22px; }
