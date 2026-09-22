@@ -1442,6 +1442,20 @@ select.acct-input { appearance: none; background: #fff url("data:image/svg+xml,%
 
 .cart-addr-card { margin-bottom: 20px; }
 .cart-addr-card[hidden] { display: none; }
+/* The add-address form is the same one profile.html uses (many fields, meant to be unhurried
+   there) — inside the cart it sits between the item list and checkout, so it's tightened up here
+   without touching the shared .acct-form/.acct-input classes profile.html still uses at full size. */
+.cart-addr-card .addr-form-wrap { padding: 14px 16px; margin-bottom: 16px; }
+.cart-addr-card .addr-form-wrap h3 { font-size: 15px; margin-bottom: 10px; }
+.cart-addr-card .acct-form { gap: 10px; }
+.cart-addr-card .acct-two { gap: 10px; }
+.cart-addr-card .acct-chips { gap: 6px; }
+.cart-addr-card .acct-chip span { min-height: 34px; padding: 0 12px; font-size: 13px; }
+.cart-addr-card .acct-field label, .cart-addr-card .acct-legend { margin-bottom: 4px; font-size: 12px; }
+.cart-addr-card .acct-input { padding: 9px 11px; min-height: 40px; font-size: 15px; }
+.cart-addr-card .acct-check { min-height: 32px; font-size: 13px; gap: 8px; }
+.cart-addr-card .acct-check input { width: 17px; height: 17px; }
+.cart-addr-card .acct-actions .btn { min-height: 40px; padding: 9px 18px; font-size: 14px; }
 .addr-pick-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
 .addr-pick { position: relative; display: block; cursor: pointer; }
 .addr-pick input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
