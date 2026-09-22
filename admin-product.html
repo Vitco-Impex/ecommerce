@@ -176,10 +176,14 @@
                 </div>
               </div>
               <div class="acct-field">
-                <label data-i18n="admin.productGallery">Photos <span class="opt" data-i18n="acct.optional">(optional)</span></label>
+                <label data-i18n="admin.productGallery">Photos &amp; videos <span class="opt" data-i18n="acct.optional">(optional)</span></label>
                 <div id="galleryList" class="admin-repeat-list"></div>
-                <button type="button" class="btn btn-line btn-sm" id="galleryAddBtn" data-i18n="admin.addImage">+ Add photo</button>
-                <p class="acct-hint" data-i18n="admin.productImageHint">Paste links to hosted photos — the first one is used as the cover photo on cards and in the cart; the rest appear in the product page's gallery.</p>
+                <div id="videoList" class="admin-repeat-list"></div>
+                <div class="admin-add-row">
+                  <button type="button" class="btn btn-line btn-sm" id="galleryAddBtn" data-i18n="admin.addImage">+ Add photo</button>
+                  <button type="button" class="btn btn-line btn-sm" id="videoAddBtn" data-i18n="admin.addVideo">+ Add video link</button>
+                </div>
+                <p class="acct-hint" data-i18n="admin.productImageHint">Paste links to hosted photos — the first one is used as the cover photo on cards and in the cart; the rest appear in the product page's gallery. Video links (YouTube etc.) show in their own section.</p>
               </div>
               <div class="acct-field">
                 <label for="prodDescription"><span data-i18n="admin.productDescription">Description</span> <span class="opt" data-i18n="acct.optional">(optional)</span></label>
@@ -193,11 +197,6 @@
                 </div>
                 <div id="prodDescription" class="acct-input admin-richtext" contenteditable="true"></div>
                 <p class="acct-field-error" id="prodDescriptionErr" hidden></p>
-              </div>
-              <div class="acct-field">
-                <label data-i18n="admin.productVideos">Video links <span class="opt" data-i18n="acct.optional">(optional)</span></label>
-                <div id="videoList" class="admin-repeat-list"></div>
-                <button type="button" class="btn btn-line btn-sm" id="videoAddBtn" data-i18n="admin.addVideo">+ Add video link</button>
               </div>
               <div class="acct-field">
                 <label data-i18n="admin.productSpecs">Specifications <span class="opt" data-i18n="acct.optional">(optional)</span></label>

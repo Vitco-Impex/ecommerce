@@ -1726,6 +1726,7 @@ a.catalog-admin-tile:hover .catalog-admin-tile-icon { background: #fff; }
   justify-content: center;
 }
 .admin-repeat-remove:hover { background: #FCEBEA; color: #B3261E; border-color: #F3B9B5; }
+.admin-add-row { display: flex; flex-wrap: wrap; gap: 8px; }
 
 .admin-richtext-toolbar {
   display: flex;
