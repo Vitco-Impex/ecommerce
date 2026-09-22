@@ -24,19 +24,19 @@
     '<line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
   var cartIconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
     '<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>';
+  var playIconSvg = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
 
   function esc(s) {
     return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
     });
   }
-  function waLink(text) { return "https://wa.me/919917045963?text=" + encodeURIComponent(text); }
-
   // Recognises youtube.com/watch, youtu.be, /shorts/ and /embed/ links so they can be embedded
-  // directly; anything else (Drive, Vimeo, etc.) just gets rendered as a "Watch video" link instead.
-  function youtubeEmbedUrl(url) {
+  // directly (and get a real thumbnail); anything else (Drive, Vimeo, etc.) just becomes a "Watch
+  // video" link — there's no reliable thumbnail or embed URL to build for an arbitrary video host.
+  function youtubeId(url) {
     var m = String(url || "").match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{6,15})/);
-    return m ? "https://www.youtube.com/embed/" + m[1] : null;
+    return m ? m[1] : null;
   }
 
   function renderUnavailable() {
@@ -95,7 +95,6 @@
     var name = catalog.productName(product);
     var catName = category ? catalog.categoryName(category) : "";
     var catHref = category ? "index.html#" + category.slug : "index.html";
-    var waEnquire = waLink("I'm interested in VITCO " + product.name_en + (catName ? " (" + catName + ")" : "") + ". Please share price and availability.");
 
     document.title = name + (catName ? " — " + catName : "") + " — VITCO";
     var metaDesc = document.getElementById("pageDescription");
@@ -116,15 +115,41 @@
       '</nav>'
     );
 
-    var allImages = [product.image_url].concat(product.gallery_images || []).filter(Boolean);
-    var hasImage = allImages.length > 0;
-    var galleryMedia = hasImage
-      ? '<img id="pdpMainImg" src="' + esc(allImages[0]) + '" alt="' + esc(name) + '">'
-      : packageIconSvg;
-    var thumbsHtml = allImages.length > 1
-      ? '<div class="pdp-gallery-thumbs">' + allImages.map(function (src, i) {
-          return '<button type="button" class="pdp-gallery-thumb' + (i === 0 ? " is-active" : "") + '" data-src="' + esc(src) + '"><img src="' + esc(src) + '" alt=""></button>';
-        }).join('') + '</div>'
+    // One combined gallery: cover photo, any additional photos, then videos — clicking any thumbnail
+    // swaps what's showing in the main frame, the same way for a photo or a video.
+    var mediaItems = [product.image_url].concat(product.gallery_images || []).filter(Boolean)
+      .map(function (src) { return { type: "image", src: src }; });
+    (product.video_urls || []).forEach(function (v) {
+      var yid = youtubeId(v);
+      mediaItems.push({
+        type: "video",
+        src: v,
+        embed: yid ? "https://www.youtube.com/embed/" + yid : null,
+        thumb: yid ? "https://img.youtube.com/vi/" + yid + "/hqdefault.jpg" : null
+      });
+    });
+    var hasMedia = mediaItems.length > 0;
+
+    function mediaMainHtml(item) {
+      if (item.type === "image") return '<img src="' + esc(item.src) + '" alt="' + esc(name) + '">';
+      if (item.embed) {
+        return '<div class="pdp-gallery-video">' +
+          '<iframe src="' + esc(item.embed) + '" title="Product video" allowfullscreen frameborder="0"></iframe>' +
+          '<a class="pdp-gallery-video-fallback" href="' + esc(item.src) + '" target="_blank" rel="noopener">' + esc(t("pdp.watchOnYoutube", "Watch on YouTube")) + arrowIconSvg + '</a>' +
+          '</div>';
+      }
+      return '<a class="pdp-gallery-video-link" href="' + esc(item.src) + '" target="_blank" rel="noopener">' + esc(t("pdp.watchVideo", "Watch video")) + arrowIconSvg + '</a>';
+    }
+    function mediaThumbHtml(item, i) {
+      var thumbSrc = item.type === "image" ? item.src : item.thumb;
+      var inner = thumbSrc ? '<img src="' + esc(thumbSrc) + '" alt="">' : packageIconSvg;
+      var play = item.type === "video" ? '<span class="pdp-gallery-thumb-play">' + playIconSvg + '</span>' : '';
+      return '<button type="button" class="pdp-gallery-thumb' + (i === 0 ? " is-active" : "") + '" data-index="' + i + '">' + inner + play + '</button>';
+    }
+
+    var galleryMedia = hasMedia ? mediaMainHtml(mediaItems[0]) : packageIconSvg;
+    var thumbsHtml = mediaItems.length > 1
+      ? '<div class="pdp-gallery-thumbs">' + mediaItems.map(mediaThumbHtml).join('') + '</div>'
       : '';
     var pdpPrice = product.price == null
       ? '<span class="pdp-price" data-i18n="common.priceTBD">' + esc(t("common.priceTBD")) + '</span>'
@@ -134,13 +159,18 @@
           '<span class="pdp-price-off">' + catalog.discountPercent(product.price, product.discount_price) + '% ' + esc(t("common.off", "OFF")) + '</span>'
         : '<span class="pdp-price">' + esc(catalog.formatPrice(product.price)) + '</span>';
 
+    var firstIsVisual = hasMedia && (mediaItems[0].type === "image" || mediaItems[0].embed);
+    var customSpecRows = (product.specs || []).map(function (s) {
+      return '<tr><th>' + esc(s.label) + '</th><td>' + esc(s.value) + '</td></tr>';
+    }).join('');
+
     html += (
       '<section class="pdp-hero">' +
       '  <div class="container pdp-hero-grid" data-product-key="' + esc(product.slug) + '" data-product-name="' + esc(product.name_en) + '" data-product-category="' + esc(catName || "") + '" data-product-image="' + esc(product.image_url || "") + '">' +
       '    <div class="pdp-gallery">' +
-      '      <div class="pdp-gallery-main' + (hasImage ? " has-image" : "") + '">' + galleryMedia + '</div>' +
+      '      <div class="pdp-gallery-main' + (firstIsVisual ? " has-image" : "") + '" id="pdpGalleryMain">' + galleryMedia + '</div>' +
       thumbsHtml +
-      (hasImage ? '' : '      <div class="pdp-gallery-note" data-i18n="pdp.galleryNote">' + esc(t("pdp.galleryNote")) + '</div>') +
+      (hasMedia ? '' : '      <div class="pdp-gallery-note" data-i18n="pdp.galleryNote">' + esc(t("pdp.galleryNote")) + '</div>') +
       '    </div>' +
       '    <div class="pdp-info">' +
       (category ? '      <a class="pdp-cat-link" href="' + catHref + '">' + esc(catName) + '</a>' : '') +
@@ -154,45 +184,15 @@
         ? '      <div class="pdp-description-body">' + product.description + '</div>'
         : '') +
       '      <div class="pdp-cta-row">' +
-      '        <button type="button" class="btn-icon pdp-cart-btn" data-i18n-title="common.addToCart" title="' + esc(t("common.addToCart")) + '" aria-label="' + esc(t("common.addToCart")) + '">' + cartIconSvg + '</button>' +
-      '        <button type="button" class="btn btn-line" data-i18n="common.buyNow">' + esc(t("common.buyNow")) + '</button>' +
-      '        <a class="btn btn-primary pdp-enquire-btn" href="' + waEnquire + '" target="_blank" rel="noopener" data-i18n="common.enquireWa">' + esc(t("common.enquireWa")) +
-      '          ' + arrowIconSvg +
-      '        </a>' +
+      '        <button type="button" class="btn btn-line pdp-cart-btn" data-i18n-title="common.addToCart" title="' + esc(t("common.addToCart")) + '" aria-label="' + esc(t("common.addToCart")) + '">' + cartIconSvg + '<span data-i18n="common.addToCart">' + esc(t("common.addToCart")) + '</span></button>' +
+      '        <button type="button" class="btn btn-primary" data-i18n="common.buyNow">' + esc(t("common.buyNow")) + '</button>' +
       '      </div>' +
-      '    </div>' +
-      '  </div>' +
-      '</section>'
-    );
-
-    if (product.video_urls && product.video_urls.length) {
-      html += (
-        '<section class="pdp-videos"><div class="container">' +
-        '  <h2 data-i18n="pdp.videosTitle">' + esc(t("pdp.videosTitle", "Videos")) + '</h2>' +
-        '  <div class="pdp-videos-grid">' +
-        product.video_urls.map(function (v) {
-          var embed = youtubeEmbedUrl(v);
-          return embed
-            ? '<div class="pdp-video-embed"><iframe src="' + esc(embed) + '" title="Product video" loading="lazy" allowfullscreen frameborder="0"></iframe></div>'
-            : '<a class="pdp-video-link" href="' + esc(v) + '" target="_blank" rel="noopener">' + esc(t("pdp.watchVideo", "Watch video")) + arrowIconSvg + '</a>';
-        }).join('') +
-        '  </div>' +
-        '</div></section>'
-      );
-    }
-
-    var customSpecRows = (product.specs || []).map(function (s) {
-      return '<tr><th>' + esc(s.label) + '</th><td>' + esc(s.value) + '</td></tr>';
-    }).join('');
-
-    html += (
-      '<section class="pdp-specs">' +
-      '  <div class="container">' +
-      '    <h2 data-i18n="pdp.specsTitle">' + esc(t("pdp.specsTitle")) + '</h2>' +
-      '    <table class="pdp-specs-table"><tbody>' +
-      '      <tr><th data-i18n="pdp.specModel">' + esc(t("pdp.specModel")) + '</th><td>' + esc(name) + '</td></tr>' +
+      '      <h2 class="pdp-specs-inline-title" data-i18n="pdp.specsTitle">' + esc(t("pdp.specsTitle")) + '</h2>' +
+      '      <table class="pdp-specs-table pdp-specs-table-inline"><tbody>' +
+      '        <tr><th data-i18n="pdp.specModel">' + esc(t("pdp.specModel")) + '</th><td>' + esc(name) + '</td></tr>' +
       customSpecRows +
-      '    </tbody></table>' +
+      '      </tbody></table>' +
+      '    </div>' +
       '  </div>' +
       '</section>'
     );
@@ -219,10 +219,13 @@
 
     root.innerHTML = html;
 
-    var mainImg = document.getElementById("pdpMainImg");
+    var mainEl = document.getElementById("pdpGalleryMain");
     root.querySelectorAll(".pdp-gallery-thumb").forEach(function (btn) {
       btn.addEventListener("click", function () {
-        if (mainImg) mainImg.src = btn.dataset.src;
+        var item = mediaItems[Number(btn.dataset.index)];
+        if (!item || !mainEl) return;
+        mainEl.className = "pdp-gallery-main" + (item.type === "image" || item.embed ? " has-image" : "");
+        mainEl.innerHTML = mediaMainHtml(item);
         root.querySelectorAll(".pdp-gallery-thumb").forEach(function (b) { b.classList.toggle("is-active", b === btn); });
       });
     });

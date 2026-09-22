@@ -924,6 +924,54 @@ footer.site-footer a:hover { color: #fff; }
 }
 .pdp-gallery-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .pdp-gallery-thumb.is-active { border-color: var(--brand); }
+.pdp-gallery-thumb-play {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6,20,33,.35);
+  color: #fff;
+  pointer-events: none;
+}
+.pdp-gallery-thumb-play svg { width: 18px; height: 18px; }
+.pdp-gallery-thumb { position: relative; }
+
+.pdp-gallery-video { position: relative; aspect-ratio: 1 / 1; border-radius: var(--radius-md); overflow: hidden; background: #000; }
+.pdp-gallery-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.pdp-gallery-video-fallback {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 20px;
+  background: rgba(0,0,0,.65);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.pdp-gallery-video-fallback svg { width: 13px; height: 13px; }
+.pdp-gallery-video-fallback:hover { background: rgba(0,0,0,.8); }
+.pdp-gallery-video-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-md);
+  background: var(--brand-tint);
+  border: 1px solid var(--line);
+  color: var(--brand-deep);
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+}
+.pdp-gallery-video-link svg { width: 16px; height: 16px; }
 
 .pdp-info { min-width: 0; }
 .pdp-cat-link {
@@ -945,8 +993,6 @@ footer.site-footer a:hover { color: #fff; }
 .pdp-cta-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
 .pdp-cta-row .btn { flex: 1 1 160px; justify-content: center; white-space: nowrap; }
 .pdp-cta-row .btn svg { width: 16px; height: 16px; flex: none; }
-.pdp-cart-btn { flex: none; width: 48px; height: 48px; }
-.pdp-enquire-btn { flex-basis: 210px; }
 
 .pdp-description-body { font-size: 14.5px; line-height: 1.7; color: var(--steel-700); margin-bottom: 24px; }
 .pdp-description-body p { margin: 0 0 12px; }
@@ -954,28 +1000,6 @@ footer.site-footer a:hover { color: #fff; }
 .pdp-description-body ul, .pdp-description-body ol { margin: 0 0 12px; padding-left: 22px; }
 .pdp-description-body li { margin-bottom: 4px; }
 .pdp-description-body b, .pdp-description-body strong { color: var(--ink); }
-
-.pdp-videos { padding: 8px 0 40px; background: var(--steel-50); }
-.pdp-videos h2 { font-size: 20px; margin-bottom: 14px; }
-.pdp-videos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
-.pdp-video-embed { position: relative; aspect-ratio: 16 / 9; border-radius: var(--radius-md); overflow: hidden; background: #000; }
-.pdp-video-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-.pdp-video-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  align-self: start;
-  padding: 12px 18px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--line);
-  background: #fff;
-  color: var(--brand-deep);
-  font-weight: 600;
-  font-size: 14px;
-  text-decoration: none;
-}
-.pdp-video-link:hover { border-color: var(--brand); background: var(--brand-tint); }
-.pdp-video-link svg { width: 16px; height: 16px; }
 
 .pdp-specs h2 { font-size: 20px; margin-bottom: 16px; }
 .pdp-specs-table { width: 100%; max-width: 640px; border-collapse: collapse; }
@@ -985,6 +1009,9 @@ footer.site-footer a:hover { color: #fff; }
 .pdp-specs-table td { color: var(--ink); }
 .pdp-specs-table td a { color: var(--brand-deep); text-decoration: none; }
 .pdp-specs-table td a:hover { text-decoration: underline; }
+.pdp-specs-inline-title { font-size: 16px; margin-bottom: 10px; }
+.pdp-specs-table-inline { max-width: none; }
+.pdp-specs-table-inline th, .pdp-specs-table-inline td { padding: 10px 8px; font-size: 13.5px; }
 
 .pdp-why { background: var(--brand-deep); color: #fff; }
 .pdp-why h2 { font-size: 20px; color: #fff; margin-bottom: 20px; }
