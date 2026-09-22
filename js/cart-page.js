@@ -298,7 +298,8 @@
     remove.innerHTML = trashIconSvg;
     remove.addEventListener("click", function () { cart.removeItem(item.key); });
 
-    return h("div", "cart-item", {}, [info, qty, remove]);
+    var actions = h("div", "cart-item-actions", {}, [qty, remove]);
+    return h("div", "cart-item", {}, [info, actions]);
   }
 
   function render() {
