@@ -47,6 +47,7 @@
   var minusIconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>';
   var plusIconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
   var trashIconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
+  var packageIconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>';
 
   // ==================================================================== address section
   var addrCard = $("cartAddrCard");
@@ -279,10 +280,29 @@
 
   // ==================================================================== cart items
   function itemRow(item) {
+    var href = "product.html?id=" + encodeURIComponent(item.key);
+
+    var thumb = document.createElement("a");
+    thumb.className = "cart-item-thumb";
+    thumb.href = href;
+    thumb.tabIndex = -1;
+    thumb.setAttribute("aria-hidden", "true");
+    if (item.image) {
+      var img = document.createElement("img");
+      img.src = item.image;
+      img.alt = "";
+      img.loading = "lazy";
+      thumb.appendChild(img);
+    } else {
+      thumb.innerHTML = packageIconSvg;
+    }
+
+    var nameLink = h("a", "cart-item-name", { text: item.name, attrs: { href: href } });
     var info = h("div", "cart-item-info", {}, [
-      h("div", "cart-item-name", { text: item.name }),
+      nameLink,
       item.category ? h("div", "cart-item-cat", { text: item.category }) : h("div", "cart-item-cat", { text: "" })
     ]);
+    var main = h("div", "cart-item-main", {}, [thumb, info]);
 
     var dec = h("button", "cart-qty-btn", { attrs: { type: "button", "aria-label": "-" } });
     dec.innerHTML = minusIconSvg;
@@ -299,7 +319,7 @@
     remove.addEventListener("click", function () { cart.removeItem(item.key); });
 
     var actions = h("div", "cart-item-actions", {}, [qty, remove]);
-    return h("div", "cart-item", {}, [info, actions]);
+    return h("div", "cart-item", {}, [main, actions]);
   }
 
   function render() {

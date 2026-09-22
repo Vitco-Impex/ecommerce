@@ -231,17 +231,23 @@
       box.appendChild(h("div", "acct-empty", {}, [h("p", "", { key: "admin.noProducts" })]));
       return;
     }
+    var catalog = window.VitcoCatalog;
     var ul = h("ul", "cat-list");
     rows.forEach(function (p) {
       var name = p["name_" + lang()] || p.name_en;
       var cat = p.categories ? (p.categories["name_" + lang()] || p.categories.name_en) : null;
+      var priceText = catalog && p.price != null ? catalog.formatPrice(p.discount_price != null ? p.discount_price : p.price) : null;
+
+      var metaChildren = [];
+      if (cat) metaChildren.push(h("span", "cat-row-tag", { text: cat }));
+      if (priceText) metaChildren.push(h("span", "cat-row-count", { text: priceText }));
 
       var body = h("button", "cat-row-body", { attrs: { type: "button" } }, [
         h("div", "cat-row-name", {}, [
           h("strong", "", { text: name }),
           h("span", "", { text: "#" + p.slug })
         ]),
-        h("div", "cat-row-meta", {}, cat ? [h("span", "cat-row-tag", { text: cat })] : [])
+        h("div", "cat-row-meta", {}, metaChildren)
       ]);
       body.addEventListener("click", function () { copyProduct(p); });
 
@@ -264,7 +270,7 @@
 
   function loadProducts() {
     skeletons($("existingList"), 2);
-    return client.from("products").select("id,slug,name_en,name_hi,sort_order,category_id,categories(name_en,name_hi)")
+    return client.from("products").select("id,slug,name_en,name_hi,sort_order,category_id,image_url,price,discount_price,categories(name_en,name_hi)")
       .order("sort_order", { ascending: true })
       .then(function (res) {
         if (res.error) throw res.error;
@@ -298,6 +304,12 @@
     categorySelect.value = p.category_id || "";
     fieldError(categorySelect, $("prodCategoryErr"), null);
     setNameValues(p.name_en, p.name_hi);
+    $("prodImage").value = p.image_url || "";
+    $("prodPrice").value = p.price != null ? p.price : "";
+    $("prodDiscountPrice").value = p.discount_price != null ? p.discount_price : "";
+    fieldError($("prodImage"), $("prodImageErr"), null);
+    fieldError($("prodPrice"), $("prodPriceErr"), null);
+    fieldError($("prodDiscountPrice"), $("prodDiscountPriceErr"), null);
     slugTouched = true;
     slugInput.value = p.slug || "";
     slugInput.hidden = false;
@@ -377,6 +389,11 @@
     var nameEn = nameValues.en.trim();
     var nameHi = nameValues.hi.trim();
     var slug = currentSlug();
+    var imageUrl = $("prodImage").value.trim();
+    var priceRaw = $("prodPrice").value.trim();
+    var discountRaw = $("prodDiscountPrice").value.trim();
+    var price = priceRaw === "" ? null : Number(priceRaw);
+    var discountPrice = discountRaw === "" ? null : Number(discountRaw);
 
     var firstBad = null;
     function check(ok, input, errEl, key) {
@@ -387,6 +404,10 @@
     check(!!categoryId, categorySelect, $("prodCategoryErr"), "err.category");
     check(nameEn.length >= 2, nameInput, nameErr, "err.productName");
     check(/^[a-z0-9-]{2,60}$/.test(slug), slugTouched ? slugInput : nameInput, $("prodSlugErr"), "err.slug");
+    check(imageUrl === "" || /^https?:\/\/\S+$/i.test(imageUrl), $("prodImage"), $("prodImageErr"), "err.imageUrl");
+    check(price === null || (Number.isFinite(price) && price >= 0), $("prodPrice"), $("prodPriceErr"), "err.price");
+    check(discountPrice === null || (Number.isFinite(discountPrice) && discountPrice >= 0), $("prodDiscountPrice"), $("prodDiscountPriceErr"), "err.price");
+    check(discountPrice === null || (price !== null && discountPrice < price), $("prodDiscountPrice"), $("prodDiscountPriceErr"), "err.discountPrice");
     if (firstBad) { firstBad.focus(); setMessage($("prodMsg"), null); return; }
 
     var btn = $("prodSave"), label = btn.querySelector("span");
@@ -395,13 +416,18 @@
     label.setAttribute("data-i18n", "acct.saving"); label.textContent = t("acct.saving", "Saving…");
     setMessage($("prodMsg"), null);
 
+    var payload = {
+      category_id: categoryId, slug: slug, name_en: nameEn, name_hi: nameHi || null,
+      image_url: imageUrl || null, price: price, discount_price: discountPrice
+    };
     var failKey = wasEditing ? "admin.updateProductFailed" : "admin.addProductFailed";
     var query = wasEditing
-      ? client.from("products").update({ category_id: categoryId, slug: slug, name_en: nameEn, name_hi: nameHi || null }).eq("id", wasEditing)
+      ? client.from("products").update(payload).eq("id", wasEditing)
       : client.from("products").select("sort_order").eq("category_id", categoryId).order("sort_order", { ascending: false }).limit(1)
         .then(function (res) {
           var nextOrder = (res.data && res.data[0] ? res.data[0].sort_order : -1) + 1;
-          return client.from("products").insert({ category_id: categoryId, slug: slug, name_en: nameEn, name_hi: nameHi || null, sort_order: nextOrder });
+          payload.sort_order = nextOrder;
+          return client.from("products").insert(payload);
         });
 
     query.then(function (res) {

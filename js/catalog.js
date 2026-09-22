@@ -25,7 +25,7 @@
       auth.getClient().then(function (client) {
         return Promise.all([
           client.from("categories").select("id,slug,name_en,name_hi,sort_order,created_at"),
-          client.from("products").select("id,category_id,slug,name_en,name_hi,sort_order,created_at")
+          client.from("products").select("id,category_id,slug,name_en,name_hi,sort_order,created_at,image_url,price,discount_price")
         ]);
       }),
       timeout
@@ -49,6 +49,11 @@
   function byId(id) { return state.categories.filter(function (c) { return c.id === id; })[0] || null; }
   function bySlug(slug) { return state.products.filter(function (p) { return p.slug === slug; })[0] || null; }
 
+  // Indian grouping, no paise on the storefront (₹45,000 not ₹45,000.00) — admin can still type
+  // cents into the price field, this just doesn't show them since VITCO's prices are always whole.
+  function formatPrice(n) { return "₹" + Number(n).toLocaleString("en-IN", { maximumFractionDigits: 0 }); }
+  function discountPercent(price, discountPrice) { return Math.round((1 - discountPrice / price) * 100); }
+
   var api = {
     state: state,
     ready: function (cb) { state.loaded ? cb(state) : window.addEventListener("vitco:catalog-ready", function () { cb(state); }, { once: true }); },
@@ -56,7 +61,9 @@
     productName: function (prod) { return t(prod, "name"); },
     categoryById: byId,
     productBySlug: bySlug,
-    productsInCategory: function (categoryId) { return state.products.filter(function (p) { return p.category_id === categoryId; }); }
+    productsInCategory: function (categoryId) { return state.products.filter(function (p) { return p.category_id === categoryId; }); },
+    formatPrice: formatPrice,
+    discountPercent: discountPercent
   };
   window.VitcoCatalog = api;
 

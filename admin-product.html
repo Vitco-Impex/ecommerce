@@ -164,6 +164,24 @@
                 <p class="acct-field-error" id="prodNameErr" hidden></p>
               </div>
               <div class="acct-field">
+                <label for="prodImage" data-i18n="admin.productImage">Image URL</label>
+                <input id="prodImage" class="acct-input" type="url" maxlength="2000" autocomplete="off" placeholder="https://...">
+                <p class="acct-field-error" id="prodImageErr" hidden></p>
+                <p class="acct-hint" data-i18n="admin.productImageHint">Optional — paste a link to a hosted photo of this product. Leave blank to keep the placeholder icon.</p>
+              </div>
+              <div class="acct-two">
+                <div class="acct-field">
+                  <label for="prodPrice" data-i18n="admin.productPrice">Price (₹)</label>
+                  <input id="prodPrice" class="acct-input" type="number" inputmode="decimal" min="0" step="1" autocomplete="off">
+                  <p class="acct-field-error" id="prodPriceErr" hidden></p>
+                </div>
+                <div class="acct-field">
+                  <label for="prodDiscountPrice"><span data-i18n="admin.productDiscountPrice">Discount price (₹)</span> <span class="opt" data-i18n="acct.optional">(optional)</span></label>
+                  <input id="prodDiscountPrice" class="acct-input" type="number" inputmode="decimal" min="0" step="1" autocomplete="off">
+                  <p class="acct-field-error" id="prodDiscountPriceErr" hidden></p>
+                </div>
+              </div>
+              <div class="acct-field">
                 <label data-i18n="admin.urlLabel">Page link</label>
                 <div class="admin-slug-preview" id="slugPreview">
                   <span class="admin-slug-base" id="slugBase">product.html?id=</span><span id="slugValue">—</span>

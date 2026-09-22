@@ -20,14 +20,19 @@
   function getItems() { return read(); }
   function count() { return read().reduce(function (n, i) { return n + i.qty; }, 0); }
 
-  // product: { key, name, category } — name/category are the English values (matches how
-  // order_requests already stores product_name, and how Buy Now builds its own request).
+  // product: { key, name, category, image } — name/category are the English values (matches how
+  // order_requests already stores product_name, and how Buy Now builds its own request). image is
+  // the product's image_url, if it has one — purely cosmetic for the cart page's thumbnail.
   function addItem(product, qty) {
     qty = qty || 1;
     var items = read();
     var existing = items.filter(function (i) { return i.key === product.key; })[0];
-    if (existing) existing.qty = Math.min(999, existing.qty + qty);
-    else items.push({ key: product.key, name: product.name, category: product.category || "", qty: Math.min(999, qty) });
+    if (existing) {
+      existing.qty = Math.min(999, existing.qty + qty);
+      if (product.image) existing.image = product.image;
+    } else {
+      items.push({ key: product.key, name: product.name, category: product.category || "", image: product.image || "", qty: Math.min(999, qty) });
+    }
     write(items);
   }
 
@@ -87,7 +92,8 @@
     addItem({
       key: card.dataset.productKey.slice(0, 60),
       name: (card.dataset.productName || card.dataset.productKey).slice(0, 160),
-      category: (card.dataset.productCategory || "").slice(0, 160)
+      category: (card.dataset.productCategory || "").slice(0, 160),
+      image: (card.dataset.productImage || "").slice(0, 2000)
     }, 1);
     if (window.VitcoUi) window.VitcoUi.toast(t("cart.itemAdded", "Added to cart."), "success");
   });

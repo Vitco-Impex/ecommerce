@@ -54,15 +54,28 @@
     document.title = t("pdp.notFoundTitle") + " — VITCO";
   }
 
+  function priceBlockHtml(catalog, p) {
+    if (p.price == null) return '<span class="price-now" data-i18n="common.priceTBD">' + esc(t("common.priceTBD")) + '</span>';
+    if (p.discount_price != null) {
+      return '<span class="price-now">' + esc(catalog.formatPrice(p.discount_price)) + '</span>' +
+        '<span class="price-was">' + esc(catalog.formatPrice(p.price)) + '</span>' +
+        '<span class="price-off">' + catalog.discountPercent(p.price, p.discount_price) + '% ' + esc(t("common.off", "OFF")) + '</span>';
+    }
+    return '<span class="price-now">' + esc(catalog.formatPrice(p.price)) + '</span>';
+  }
+
   function productCardHtml(catalog, p, catName) {
     var name = catalog.productName(p);
     var href = "product.html?id=" + encodeURIComponent(p.slug);
+    var media = p.image_url
+      ? '<img src="' + esc(p.image_url) + '" alt="" loading="lazy">'
+      : packageIconSvg;
     return (
-      '<div class="product-card" data-product-key="' + esc(p.slug) + '" data-product-name="' + esc(p.name_en) + '" data-product-category="' + esc(catName || "") + '">' +
-      '  <a class="product-card-media" aria-hidden="true" href="' + href + '" tabindex="-1">' + packageIconSvg + '</a>' +
+      '<div class="product-card" data-product-key="' + esc(p.slug) + '" data-product-name="' + esc(p.name_en) + '" data-product-category="' + esc(catName || "") + '" data-product-image="' + esc(p.image_url || "") + '">' +
+      '  <a class="product-card-media" aria-hidden="true" href="' + href + '" tabindex="-1">' + media + '</a>' +
       '  <div class="product-card-body">' +
       '    <h4><a class="product-card-name-link" href="' + href + '">' + esc(name) + '</a></h4>' +
-      '    <div class="product-card-price"><span class="price-now" data-i18n="common.priceTBD">' + esc(t("common.priceTBD")) + '</span></div>' +
+      '    <div class="product-card-price">' + priceBlockHtml(catalog, p) + '</div>' +
       '    <div class="product-card-actions">' +
       '      <button type="button" class="btn-icon" data-i18n-title="common.addToCart" title="' + esc(t("common.addToCart")) + '" aria-label="' + esc(t("common.addToCart")) + '">' + cartIconSvg + '</button>' +
       '      <button type="button" class="btn btn-primary btn-xs" data-i18n="common.buyNow">' + esc(t("common.buyNow")) + '</button>' +
@@ -100,18 +113,30 @@
       '</nav>'
     );
 
+    var hasImage = !!product.image_url;
+    var galleryMedia = hasImage
+      ? '<img src="' + esc(product.image_url) + '" alt="' + esc(name) + '">'
+      : packageIconSvg;
+    var pdpPrice = product.price == null
+      ? '<span class="pdp-price" data-i18n="common.priceTBD">' + esc(t("common.priceTBD")) + '</span>'
+      : product.discount_price != null
+        ? '<span class="pdp-price">' + esc(catalog.formatPrice(product.discount_price)) + '</span>' +
+          '<span class="pdp-price-was">' + esc(catalog.formatPrice(product.price)) + '</span>' +
+          '<span class="pdp-price-off">' + catalog.discountPercent(product.price, product.discount_price) + '% ' + esc(t("common.off", "OFF")) + '</span>'
+        : '<span class="pdp-price">' + esc(catalog.formatPrice(product.price)) + '</span>';
+
     html += (
       '<section class="pdp-hero">' +
-      '  <div class="container pdp-hero-grid" data-product-key="' + esc(product.slug) + '" data-product-name="' + esc(product.name_en) + '" data-product-category="' + esc(catName || "") + '">' +
+      '  <div class="container pdp-hero-grid" data-product-key="' + esc(product.slug) + '" data-product-name="' + esc(product.name_en) + '" data-product-category="' + esc(catName || "") + '" data-product-image="' + esc(product.image_url || "") + '">' +
       '    <div class="pdp-gallery">' +
-      '      <div class="pdp-gallery-main">' + packageIconSvg + '</div>' +
-      '      <div class="pdp-gallery-note" data-i18n="pdp.galleryNote">' + esc(t("pdp.galleryNote")) + '</div>' +
+      '      <div class="pdp-gallery-main' + (hasImage ? " has-image" : "") + '">' + galleryMedia + '</div>' +
+      (hasImage ? '' : '      <div class="pdp-gallery-note" data-i18n="pdp.galleryNote">' + esc(t("pdp.galleryNote")) + '</div>') +
       '    </div>' +
       '    <div class="pdp-info">' +
       (category ? '      <a class="pdp-cat-link" href="' + catHref + '">' + esc(catName) + '</a>' : '') +
       '      <h1>' + esc(name) + '</h1>' +
       '      <div class="pdp-price-row">' +
-      '        <span class="pdp-price" data-i18n="common.priceTBD">' + esc(t("common.priceTBD")) + '</span>' +
+      pdpPrice +
       '        <span class="pdp-stock" data-i18n="pdp.specAvailabilityValue">' + esc(t("pdp.specAvailabilityValue")) + '</span>' +
       '      </div>' +
       '      <ul class="pdp-trust-row">' +
@@ -137,7 +162,7 @@
       '    <table class="pdp-specs-table"><tbody>' +
       '      <tr><th data-i18n="pdp.specModel">' + esc(t("pdp.specModel")) + '</th><td>' + esc(name) + '</td></tr>' +
       '      <tr><th data-i18n="pdp.specCategory">' + esc(t("pdp.specCategory")) + '</th><td>' + catLinkHtml + '</td></tr>' +
-      '      <tr><th data-i18n="pdp.specPrice">' + esc(t("pdp.specPrice")) + '</th><td data-i18n="common.priceTBD">' + esc(t("common.priceTBD")) + '</td></tr>' +
+      '      <tr><th data-i18n="pdp.specPrice">' + esc(t("pdp.specPrice")) + '</th><td>' + (product.price == null ? '<span data-i18n="common.priceTBD">' + esc(t("common.priceTBD")) + '</span>' : esc(catalog.formatPrice(product.discount_price != null ? product.discount_price : product.price))) + '</td></tr>' +
       '      <tr><th data-i18n="pdp.specAvailability">' + esc(t("pdp.specAvailability")) + '</th><td data-i18n="pdp.specAvailabilityValue">' + esc(t("pdp.specAvailabilityValue")) + '</td></tr>' +
       '      <tr><th data-i18n="pdp.specWarranty">' + esc(t("pdp.specWarranty")) + '</th><td data-i18n="pdp.specWarrantyValue">' + esc(t("pdp.specWarrantyValue")) + '</td></tr>' +
       '    </tbody></table>' +

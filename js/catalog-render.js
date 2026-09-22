@@ -28,15 +28,28 @@
     });
   }
 
+  function priceBlockHtml(catalog, p) {
+    if (p.price == null) return '<span class="price-now" data-i18n="common.priceTBD">' + esc(t("common.priceTBD")) + '</span>';
+    if (p.discount_price != null) {
+      return '<span class="price-now">' + esc(catalog.formatPrice(p.discount_price)) + '</span>' +
+        '<span class="price-was">' + esc(catalog.formatPrice(p.price)) + '</span>' +
+        '<span class="price-off">' + catalog.discountPercent(p.price, p.discount_price) + '% ' + esc(t("common.off", "OFF")) + '</span>';
+    }
+    return '<span class="price-now">' + esc(catalog.formatPrice(p.price)) + '</span>';
+  }
+
   function productCardHtml(catalog, p, catName) {
     var name = catalog.productName(p);
     var href = "product.html?id=" + encodeURIComponent(p.slug);
+    var media = p.image_url
+      ? '<img src="' + esc(p.image_url) + '" alt="" loading="lazy">'
+      : packageIconSvg;
     return (
-      '<div class="product-card" data-product-key="' + esc(p.slug) + '" data-product-name="' + esc(p.name_en) + '" data-product-category="' + esc(catName || "") + '">' +
-      '  <a class="product-card-media" aria-hidden="true" href="' + href + '" tabindex="-1">' + packageIconSvg + '</a>' +
+      '<div class="product-card" data-product-key="' + esc(p.slug) + '" data-product-name="' + esc(p.name_en) + '" data-product-category="' + esc(catName || "") + '" data-product-image="' + esc(p.image_url || "") + '">' +
+      '  <a class="product-card-media" aria-hidden="true" href="' + href + '" tabindex="-1">' + media + '</a>' +
       '  <div class="product-card-body">' +
       '    <h4><a class="product-card-name-link" href="' + href + '">' + esc(name) + '</a></h4>' +
-      '    <div class="product-card-price"><span class="price-now" data-i18n="common.priceTBD">' + esc(t("common.priceTBD")) + '</span></div>' +
+      '    <div class="product-card-price">' + priceBlockHtml(catalog, p) + '</div>' +
       '    <div class="product-card-actions">' +
       '      <button type="button" class="btn-icon" data-i18n-title="common.addToCart" title="' + esc(t("common.addToCart")) + '" aria-label="' + esc(t("common.addToCart")) + '">' + cartIconSvg + '</button>' +
       '      <button type="button" class="btn btn-primary btn-xs" data-i18n="common.buyNow">' + esc(t("common.buyNow")) + '</button>' +
