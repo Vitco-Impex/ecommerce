@@ -25,7 +25,7 @@
       auth.getClient().then(function (client) {
         return Promise.all([
           client.from("categories").select("id,slug,name_en,name_hi,sort_order,created_at"),
-          client.from("products").select("id,category_id,slug,name_en,name_hi,sort_order,created_at,image_url,price,discount_price")
+          client.from("products").select("id,category_id,slug,name_en,name_hi,sort_order,created_at,image_url,price,discount_price,description,gallery_images,video_urls,specs")
         ]);
       }),
       timeout

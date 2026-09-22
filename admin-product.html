@@ -182,6 +182,26 @@
                 </div>
               </div>
               <div class="acct-field">
+                <label for="prodDescription"><span data-i18n="admin.productDescription">Description</span> <span class="opt" data-i18n="acct.optional">(optional)</span></label>
+                <textarea id="prodDescription" class="acct-input" rows="4" maxlength="4000"></textarea>
+                <p class="acct-field-error" id="prodDescriptionErr" hidden></p>
+              </div>
+              <div class="acct-field">
+                <label data-i18n="admin.productGallery">Additional photos <span class="opt" data-i18n="acct.optional">(optional)</span></label>
+                <div id="galleryList" class="admin-repeat-list"></div>
+                <button type="button" class="btn btn-line btn-sm" id="galleryAddBtn" data-i18n="admin.addImage">+ Add photo</button>
+              </div>
+              <div class="acct-field">
+                <label data-i18n="admin.productVideos">Video links <span class="opt" data-i18n="acct.optional">(optional)</span></label>
+                <div id="videoList" class="admin-repeat-list"></div>
+                <button type="button" class="btn btn-line btn-sm" id="videoAddBtn" data-i18n="admin.addVideo">+ Add video link</button>
+              </div>
+              <div class="acct-field">
+                <label data-i18n="admin.productSpecs">Specifications <span class="opt" data-i18n="acct.optional">(optional)</span></label>
+                <div id="specsList" class="admin-repeat-list"></div>
+                <button type="button" class="btn btn-line btn-sm" id="specsAddBtn" data-i18n="admin.addSpec">+ Add specification</button>
+              </div>
+              <div class="acct-field">
                 <label data-i18n="admin.urlLabel">Page link</label>
                 <div class="admin-slug-preview" id="slugPreview">
                   <span class="admin-slug-base" id="slugBase">product.html?id=</span><span id="slugValue">—</span>

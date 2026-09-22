@@ -199,6 +199,85 @@
   }
   categorySelect.addEventListener("change", function () { fieldError(categorySelect, $("prodCategoryErr"), null); });
 
+  // ------------------------------------------------------------------ repeatable lists
+  // Shared by the gallery-photos and video-links fields — both are just "a list of URLs the admin
+  // can add/remove rows for". Malformed/blank rows are silently dropped on save rather than blocking
+  // submission — this is an admin-only tool and the result is immediately visible on the live page.
+  function makeUrlList(containerId, addBtnId, placeholder) {
+    var container = $(containerId);
+    var values = [];
+    function render() {
+      container.textContent = "";
+      values.forEach(function (v, i) {
+        var row = h("div", "admin-repeat-row");
+        var input = document.createElement("input");
+        input.className = "acct-input";
+        input.type = "url";
+        input.placeholder = placeholder;
+        input.value = v;
+        input.addEventListener("input", function () { values[i] = input.value; });
+        var remove = h("button", "admin-repeat-remove", { attrs: { type: "button", "aria-label": "Remove" } });
+        remove.textContent = "×";
+        remove.addEventListener("click", function () { values.splice(i, 1); render(); });
+        row.appendChild(input);
+        row.appendChild(remove);
+        container.appendChild(row);
+      });
+    }
+    $(addBtnId).addEventListener("click", function () { values.push(""); render(); });
+    return {
+      set: function (arr) { values = (arr || []).slice(); render(); },
+      get: function () {
+        return values.map(function (v) { return v.trim(); })
+          .filter(function (v) { return /^https?:\/\/\S+$/i.test(v); });
+      }
+    };
+  }
+
+  function makeSpecsList() {
+    var container = $("specsList");
+    var values = [];
+    function render() {
+      container.textContent = "";
+      values.forEach(function (v, i) {
+        var row = h("div", "admin-repeat-row admin-repeat-row-2col");
+        var labelInput = document.createElement("input");
+        labelInput.className = "acct-input";
+        labelInput.type = "text";
+        labelInput.maxLength = 60;
+        labelInput.placeholder = t("admin.specLabelPh", "Label, e.g. Capacity");
+        labelInput.value = v.label || "";
+        labelInput.addEventListener("input", function () { values[i].label = labelInput.value; });
+        var valueInput = document.createElement("input");
+        valueInput.className = "acct-input";
+        valueInput.type = "text";
+        valueInput.maxLength = 160;
+        valueInput.placeholder = t("admin.specValuePh", "Value, e.g. 60 L");
+        valueInput.value = v.value || "";
+        valueInput.addEventListener("input", function () { values[i].value = valueInput.value; });
+        var remove = h("button", "admin-repeat-remove", { attrs: { type: "button", "aria-label": "Remove" } });
+        remove.textContent = "×";
+        remove.addEventListener("click", function () { values.splice(i, 1); render(); });
+        row.appendChild(labelInput);
+        row.appendChild(valueInput);
+        row.appendChild(remove);
+        container.appendChild(row);
+      });
+    }
+    $("specsAddBtn").addEventListener("click", function () { values.push({ label: "", value: "" }); render(); });
+    return {
+      set: function (arr) { values = (arr || []).map(function (s) { return { label: s.label || "", value: s.value || "" }; }); render(); },
+      get: function () {
+        return values.map(function (v) { return { label: v.label.trim(), value: v.value.trim() }; })
+          .filter(function (v) { return v.label && v.value; });
+      }
+    };
+  }
+
+  var galleryList = makeUrlList("galleryList", "galleryAddBtn", "https://...");
+  var videoList = makeUrlList("videoList", "videoAddBtn", "https://youtube.com/watch?v=...");
+  var specsList = makeSpecsList();
+
   // ------------------------------------------------------------------ lists
   function skeletons(container, n) {
     container.textContent = "";
@@ -270,7 +349,7 @@
 
   function loadProducts() {
     skeletons($("existingList"), 2);
-    return client.from("products").select("id,slug,name_en,name_hi,sort_order,category_id,image_url,price,discount_price,categories(name_en,name_hi)")
+    return client.from("products").select("id,slug,name_en,name_hi,sort_order,category_id,image_url,price,discount_price,description,gallery_images,video_urls,specs,categories(name_en,name_hi)")
       .order("sort_order", { ascending: true })
       .then(function (res) {
         if (res.error) throw res.error;
@@ -307,9 +386,14 @@
     $("prodImage").value = p.image_url || "";
     $("prodPrice").value = p.price != null ? p.price : "";
     $("prodDiscountPrice").value = p.discount_price != null ? p.discount_price : "";
+    $("prodDescription").value = p.description || "";
+    galleryList.set(p.gallery_images);
+    videoList.set(p.video_urls);
+    specsList.set(p.specs);
     fieldError($("prodImage"), $("prodImageErr"), null);
     fieldError($("prodPrice"), $("prodPriceErr"), null);
     fieldError($("prodDiscountPrice"), $("prodDiscountPriceErr"), null);
+    fieldError($("prodDescription"), $("prodDescriptionErr"), null);
     slugTouched = true;
     slugInput.value = p.slug || "";
     slugInput.hidden = false;
@@ -357,6 +441,9 @@
     $("editBanner").hidden = true;
     $("productForm").reset();
     setNameValues("", "");
+    galleryList.set([]);
+    videoList.set([]);
+    specsList.set([]);
     slugTouched = false;
     slugInput.hidden = true;
     slugEditBtn.hidden = false;
@@ -418,7 +505,9 @@
 
     var payload = {
       category_id: categoryId, slug: slug, name_en: nameEn, name_hi: nameHi || null,
-      image_url: imageUrl || null, price: price, discount_price: discountPrice
+      image_url: imageUrl || null, price: price, discount_price: discountPrice,
+      description: $("prodDescription").value.trim() || null,
+      gallery_images: galleryList.get(), video_urls: videoList.get(), specs: specsList.get()
     };
     var failKey = wasEditing ? "admin.updateProductFailed" : "admin.addProductFailed";
     var query = wasEditing
@@ -442,6 +531,9 @@
         $("productForm").reset();
         categorySelect.value = keepCategory;
         setNameValues("", "");
+        galleryList.set([]);
+        videoList.set([]);
+        specsList.set([]);
         slugTouched = false;
         slugInput.hidden = true;
         slugEditBtn.hidden = false;

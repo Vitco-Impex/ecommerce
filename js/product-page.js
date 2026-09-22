@@ -34,6 +34,13 @@
   }
   function waLink(text) { return "https://wa.me/919917045963?text=" + encodeURIComponent(text); }
 
+  // Recognises youtube.com/watch, youtu.be, /shorts/ and /embed/ links so they can be embedded
+  // directly; anything else (Drive, Vimeo, etc.) just gets rendered as a "Watch video" link instead.
+  function youtubeEmbedUrl(url) {
+    var m = String(url || "").match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{6,15})/);
+    return m ? "https://www.youtube.com/embed/" + m[1] : null;
+  }
+
   function renderUnavailable() {
     root.innerHTML =
       '<section class="pdp-not-found"><div class="container">' +
@@ -113,10 +120,16 @@
       '</nav>'
     );
 
-    var hasImage = !!product.image_url;
+    var allImages = [product.image_url].concat(product.gallery_images || []).filter(Boolean);
+    var hasImage = allImages.length > 0;
     var galleryMedia = hasImage
-      ? '<img src="' + esc(product.image_url) + '" alt="' + esc(name) + '">'
+      ? '<img id="pdpMainImg" src="' + esc(allImages[0]) + '" alt="' + esc(name) + '">'
       : packageIconSvg;
+    var thumbsHtml = allImages.length > 1
+      ? '<div class="pdp-gallery-thumbs">' + allImages.map(function (src, i) {
+          return '<button type="button" class="pdp-gallery-thumb' + (i === 0 ? " is-active" : "") + '" data-src="' + esc(src) + '"><img src="' + esc(src) + '" alt=""></button>';
+        }).join('') + '</div>'
+      : '';
     var pdpPrice = product.price == null
       ? '<span class="pdp-price" data-i18n="common.priceTBD">' + esc(t("common.priceTBD")) + '</span>'
       : product.discount_price != null
@@ -130,6 +143,7 @@
       '  <div class="container pdp-hero-grid" data-product-key="' + esc(product.slug) + '" data-product-name="' + esc(product.name_en) + '" data-product-category="' + esc(catName || "") + '" data-product-image="' + esc(product.image_url || "") + '">' +
       '    <div class="pdp-gallery">' +
       '      <div class="pdp-gallery-main' + (hasImage ? " has-image" : "") + '">' + galleryMedia + '</div>' +
+      thumbsHtml +
       (hasImage ? '' : '      <div class="pdp-gallery-note" data-i18n="pdp.galleryNote">' + esc(t("pdp.galleryNote")) + '</div>') +
       '    </div>' +
       '    <div class="pdp-info">' +
@@ -155,6 +169,35 @@
       '</section>'
     );
 
+    if (product.description) {
+      html += (
+        '<section class="pdp-description"><div class="container">' +
+        '  <h2 data-i18n="pdp.descriptionTitle">' + esc(t("pdp.descriptionTitle", "Description")) + '</h2>' +
+        '  <p>' + esc(product.description) + '</p>' +
+        '</div></section>'
+      );
+    }
+
+    if (product.video_urls && product.video_urls.length) {
+      html += (
+        '<section class="pdp-videos"><div class="container">' +
+        '  <h2 data-i18n="pdp.videosTitle">' + esc(t("pdp.videosTitle", "Videos")) + '</h2>' +
+        '  <div class="pdp-videos-grid">' +
+        product.video_urls.map(function (v) {
+          var embed = youtubeEmbedUrl(v);
+          return embed
+            ? '<div class="pdp-video-embed"><iframe src="' + esc(embed) + '" title="Product video" loading="lazy" allowfullscreen frameborder="0"></iframe></div>'
+            : '<a class="pdp-video-link" href="' + esc(v) + '" target="_blank" rel="noopener">' + esc(t("pdp.watchVideo", "Watch video")) + arrowIconSvg + '</a>';
+        }).join('') +
+        '  </div>' +
+        '</div></section>'
+      );
+    }
+
+    var customSpecRows = (product.specs || []).map(function (s) {
+      return '<tr><th>' + esc(s.label) + '</th><td>' + esc(s.value) + '</td></tr>';
+    }).join('');
+
     html += (
       '<section class="pdp-specs">' +
       '  <div class="container">' +
@@ -165,6 +208,7 @@
       '      <tr><th data-i18n="pdp.specPrice">' + esc(t("pdp.specPrice")) + '</th><td>' + (product.price == null ? '<span data-i18n="common.priceTBD">' + esc(t("common.priceTBD")) + '</span>' : esc(catalog.formatPrice(product.discount_price != null ? product.discount_price : product.price))) + '</td></tr>' +
       '      <tr><th data-i18n="pdp.specAvailability">' + esc(t("pdp.specAvailability")) + '</th><td data-i18n="pdp.specAvailabilityValue">' + esc(t("pdp.specAvailabilityValue")) + '</td></tr>' +
       '      <tr><th data-i18n="pdp.specWarranty">' + esc(t("pdp.specWarranty")) + '</th><td data-i18n="pdp.specWarrantyValue">' + esc(t("pdp.specWarrantyValue")) + '</td></tr>' +
+      customSpecRows +
       '    </tbody></table>' +
       '  </div>' +
       '</section>'
@@ -191,6 +235,14 @@
     }
 
     root.innerHTML = html;
+
+    var mainImg = document.getElementById("pdpMainImg");
+    root.querySelectorAll(".pdp-gallery-thumb").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        if (mainImg) mainImg.src = btn.dataset.src;
+        root.querySelectorAll(".pdp-gallery-thumb").forEach(function (b) { b.classList.toggle("is-active", b === btn); });
+      });
+    });
   }
 
   function render() {
