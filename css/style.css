@@ -990,9 +990,34 @@ footer.site-footer a:hover { color: #fff; }
 .pdp-price { font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 21px; color: var(--brand-deep); }
 .pdp-price-was { font-size: 15px; color: var(--steel-400); text-decoration: line-through; }
 .pdp-price-off { font-size: 12.5px; font-weight: 700; color: #1E8A4C; background: #E4F5E9; border-radius: 20px; padding: 4px 10px; }
-.pdp-cta-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+.pdp-cta-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; min-height: 44px; }
 .pdp-cta-row .btn { flex: 1 1 160px; justify-content: center; white-space: nowrap; }
 .pdp-cta-row .btn svg { width: 16px; height: 16px; flex: none; }
+.pdp-qty-stepper {
+  flex: 1 1 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  min-height: 44px;
+}
+.pdp-qty-stepper .cart-qty-btn { width: 34px; height: 34px; }
+.pdp-qty-stepper .cart-qty-btn svg { width: 14px; height: 14px; }
+.pdp-qty-input {
+  width: 48px;
+  border: none;
+  background: none;
+  text-align: center;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink);
+}
+.pdp-qty-input::-webkit-inner-spin-button, .pdp-qty-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.pdp-qty-input:focus { outline: none; }
 
 .pdp-description-body { font-size: 14.5px; line-height: 1.7; color: var(--steel-700); margin-bottom: 24px; }
 .pdp-description-body p { margin: 0 0 12px; }
@@ -1010,7 +1035,7 @@ footer.site-footer a:hover { color: #fff; }
 .pdp-specs-table td a { color: var(--brand-deep); text-decoration: none; }
 .pdp-specs-table td a:hover { text-decoration: underline; }
 .pdp-specs-inline-title { font-size: 16px; margin-bottom: 10px; }
-.pdp-specs-table-inline { max-width: none; }
+.pdp-specs-table-inline { max-width: none; margin-bottom: 20px; }
 .pdp-specs-table-inline th, .pdp-specs-table-inline td { padding: 10px 8px; font-size: 13.5px; }
 
 .pdp-why { background: var(--brand-deep); color: #fff; }

@@ -25,6 +25,45 @@
   var cartIconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
     '<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>';
   var playIconSvg = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+  var minusIconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+  var plusIconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+
+  // The Add to Cart button turns into this qty stepper once the product is actually in the cart —
+  // kept in sync by re-rendering on vitco:cart-changed, which cart.js already fires on every add/
+  // remove/qty edit (including ones made from a different tab, via cart.js's own storage listener).
+  var currentProduct = null;
+  function renderCtaArea() {
+    var area = document.getElementById("pdpCtaArea");
+    var cart = window.VitcoCart;
+    if (!area || !currentProduct || !cart) return;
+    var existing = cart.getItems().filter(function (i) { return i.key === currentProduct.slug; })[0];
+    var qty = existing ? existing.qty : 0;
+
+    if (qty > 0) {
+      area.innerHTML =
+        '<div class="pdp-qty-stepper">' +
+        '<button type="button" class="cart-qty-btn" id="pdpQtyMinus" aria-label="-">' + minusIconSvg + '</button>' +
+        '<input type="number" class="pdp-qty-input" id="pdpQtyInput" inputmode="numeric" min="1" max="999" value="' + qty + '">' +
+        '<button type="button" class="cart-qty-btn" id="pdpQtyPlus" aria-label="+">' + plusIconSvg + '</button>' +
+        '</div>' +
+        '<button type="button" class="btn btn-primary" data-i18n="common.buyNow">' + esc(t("common.buyNow")) + '</button>';
+      document.getElementById("pdpQtyMinus").addEventListener("click", function () {
+        if (qty <= 1) cart.removeItem(currentProduct.slug); else cart.setQty(currentProduct.slug, qty - 1);
+      });
+      document.getElementById("pdpQtyPlus").addEventListener("click", function () {
+        cart.setQty(currentProduct.slug, qty + 1);
+      });
+      document.getElementById("pdpQtyInput").addEventListener("change", function (e) {
+        var v = Math.max(1, Math.min(999, Number(e.target.value) || 1));
+        cart.setQty(currentProduct.slug, v);
+      });
+    } else {
+      area.innerHTML =
+        '<button type="button" class="btn btn-line pdp-cart-btn" data-i18n-title="common.addToCart" title="' + esc(t("common.addToCart")) + '" aria-label="' + esc(t("common.addToCart")) + '">' + cartIconSvg + '<span data-i18n="common.addToCart">' + esc(t("common.addToCart")) + '</span></button>' +
+        '<button type="button" class="btn btn-primary" data-i18n="common.buyNow">' + esc(t("common.buyNow")) + '</button>';
+    }
+  }
+  window.addEventListener("vitco:cart-changed", renderCtaArea);
 
   function esc(s) {
     return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
@@ -91,6 +130,7 @@
   }
 
   function renderProduct(catalog, product) {
+    currentProduct = product;
     var category = product.category_id ? catalog.categoryById(product.category_id) : null;
     var name = catalog.productName(product);
     var catName = category ? catalog.categoryName(category) : "";
@@ -183,15 +223,12 @@
         // in admin-product.html (bold/italic/underline/lists only), never visitor input.
         ? '      <div class="pdp-description-body">' + product.description + '</div>'
         : '') +
-      '      <div class="pdp-cta-row">' +
-      '        <button type="button" class="btn btn-line pdp-cart-btn" data-i18n-title="common.addToCart" title="' + esc(t("common.addToCart")) + '" aria-label="' + esc(t("common.addToCart")) + '">' + cartIconSvg + '<span data-i18n="common.addToCart">' + esc(t("common.addToCart")) + '</span></button>' +
-      '        <button type="button" class="btn btn-primary" data-i18n="common.buyNow">' + esc(t("common.buyNow")) + '</button>' +
-      '      </div>' +
       '      <h2 class="pdp-specs-inline-title" data-i18n="pdp.specsTitle">' + esc(t("pdp.specsTitle")) + '</h2>' +
       '      <table class="pdp-specs-table pdp-specs-table-inline"><tbody>' +
       '        <tr><th data-i18n="pdp.specModel">' + esc(t("pdp.specModel")) + '</th><td>' + esc(name) + '</td></tr>' +
       customSpecRows +
       '      </tbody></table>' +
+      '      <div class="pdp-cta-row" id="pdpCtaArea"></div>' +
       '    </div>' +
       '  </div>' +
       '</section>'
@@ -218,6 +255,7 @@
     }
 
     root.innerHTML = html;
+    renderCtaArea();
 
     var mainEl = document.getElementById("pdpGalleryMain");
     root.querySelectorAll(".pdp-gallery-thumb").forEach(function (btn) {
